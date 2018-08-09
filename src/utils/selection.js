@@ -2,7 +2,10 @@ export function isSelected(event, selected) {
   if (!event || selected == null) return false
   return [].concat(selected).indexOf(event) !== -1
 }
-
+export function isHovered(event, hovered) {
+  if (!event || hovered == null) return false
+  return [].concat(hovered).indexOf(event) !== -1
+}
 export function slotWidth(rowBox, slots) {
   let rowWidth = rowBox.right - rowBox.left
   let cellWidth = rowWidth / slots
