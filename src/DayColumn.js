@@ -6,7 +6,7 @@ import cn from 'classnames'
 import Selection, { getBoundsForNode, isEvent } from './Selection'
 import dates from './utils/dates'
 import * as TimeSlotUtils from './utils/TimeSlots'
-import { isSelected } from './utils/selection'
+import { isSelected, isHovered } from './utils/selection'
 import localizer from './localizer'
 
 import { notify } from './utils/helpers'
@@ -67,7 +67,7 @@ class DayColumn extends React.Component {
     timeslots: 2,
   }
 
-  state = { selecting: false }
+  state = { selecting: false, hoverElement: null }
 
   constructor(...args) {
     super(...args)
@@ -147,7 +147,6 @@ class DayColumn extends React.Component {
       </div>
     )
   }
-
   renderEvents = () => {
     let {
       components: { event: EventComponent },
@@ -208,7 +207,7 @@ class DayColumn extends React.Component {
       }
 
       let _isSelected = isSelected(event, selected)
-
+      let _isHovered = isHovered(event, this.state.hoverElement)
       if (eventPropGetter)
         var { style: xStyle, className } = eventPropGetter(
           event,
@@ -228,6 +227,8 @@ class DayColumn extends React.Component {
       return (
         <EventWrapper {...wrapperProps} key={'evt_' + idx}>
           <div
+            onMouseEnter={() => this.setState({ hoverElement: event })}
+            onMouseLeave={() => this.setState({ hoverElement: null })}
             style={{
               ...xStyle,
               top: `${top}%`,
@@ -244,6 +245,7 @@ class DayColumn extends React.Component {
             onDoubleClick={e => this._doubleClick(event, e)}
             className={cn('rbc-event', className, {
               'rbc-selected': _isSelected,
+              'rbc-hovered': _isHovered,
               'rbc-event-continues-earlier': continuesPrior,
               'rbc-event-continues-later': continuesAfter,
               'rbc-event-continues-day-prior': _continuesPrior,

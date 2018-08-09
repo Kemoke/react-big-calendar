@@ -26,6 +26,7 @@ let propTypes = {
 }
 
 class EventCell extends React.Component {
+  state = { hovering: false }
   render() {
     let {
       className,
@@ -79,9 +80,12 @@ class EventCell extends React.Component {
       // it's in a row, etc. Useful for dnd, etc.
       <EventWrapper {...wrapperProps} isRow={true}>
         <div
+          onMouseEnter={() => this.setState({ hovering: true })}
+          onMouseLeave={() => this.setState({ hovering: false })}
           style={{ ...props.style, ...style }}
           className={cn('rbc-event', className, xClassName, {
             'rbc-selected': selected,
+            'rbc-hovered': this.state.hovering,
             'rbc-event-allday': showAsAllDay,
             'rbc-event-continues-prior': continuesPrior,
             'rbc-event-continues-after': continuesAfter,
