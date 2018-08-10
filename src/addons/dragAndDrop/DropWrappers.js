@@ -197,7 +197,7 @@ function createDropWrapper(type) {
 
       // fall here for all of the resize cases
       // note: the 'drop' param is here for backward compatibility - maybe remove in future?
-      onEventResize('drop', {
+      onEventResize('resizeBottom', {
         event,
         start,
         end,
