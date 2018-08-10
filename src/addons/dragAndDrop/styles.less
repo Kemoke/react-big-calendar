@@ -49,12 +49,27 @@
     position: absolute;
     &:first-child { top: 0; }
     &:last-child { bottom: 0; }
-
-    .rbc-addons-dnd-resize-ns-icon {
-      display: none;
+    .rbc-addons-dnd-resize-ns-icon{
       border-top: 3px double;
+      display: none;
       margin: 0 auto;
-      width: 10px;
+      width: 100%;
+      height: 20px;
+      cursor: ns-resize;
+    }
+  }
+  .rbc-addons-dnd-resize-ns-anchor-end {
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    &:first-child { top: 0; }
+    &:last-child { bottom: 0; }
+    .rbc-addons-dnd-resize-ns-icon{
+      border-bottom: 3px double;
+      display: none;
+      margin: 0 auto;
+      width: 100%;
+      height: 20px;
       cursor: ns-resize;
     }
   }

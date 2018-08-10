@@ -112,8 +112,13 @@ class DraggableEventWrapper extends React.Component {
           <div className="rbc-addons-dnd-resize-ns-icon" />
         </div>
       )
+      const anchorEnd = (
+        <div className="rbc-addons-dnd-resize-ns-anchor-end">
+          <div className="rbc-addons-dnd-resize-ns-icon" />
+        </div>
+      )
       StartAnchor = !continuesPrior && connectTopDragSource(anchor)
-      EndAnchor = !continuesAfter && connectBottomDragSource(anchor)
+      EndAnchor = !continuesAfter && connectBottomDragSource(anchorEnd)
     }
 
     /*
