@@ -129,8 +129,11 @@ export default function withDragAndDrop(
 
     handleStateChange = () => {
       const isDragging = !!this.monitor.getItem()
-
-      if (isDragging !== this.state.isDragging) {
+      //dont cancel pointer events if drag item is staff
+      if (
+        isDragging !== this.state.isDragging &&
+        this.monitor.getItemType() !== 'staff'
+      ) {
         setTimeout(() => this.setState({ isDragging }))
       }
     }
