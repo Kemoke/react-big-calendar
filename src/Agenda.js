@@ -1,9 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import classes from 'dom-helpers/class'
-import getWidth from 'dom-helpers/query/width'
-import scrollbarSize from 'dom-helpers/util/scrollbarSize'
-
 import localizer from './localizer'
 import message from './utils/messages'
 import dates from './utils/dates'
@@ -11,7 +7,6 @@ import { navigate } from './utils/constants'
 import { accessor as get } from './utils/accessors'
 import { accessor, dateFormat, dateRangeFormat } from './utils/propTypes'
 import { inRange } from './utils/eventLevels'
-import { isSelected } from './utils/selection'
 
 class Agenda extends React.Component {
   static propTypes = {
@@ -41,15 +36,18 @@ class Agenda extends React.Component {
   static defaultProps = {
     length: 30,
   }
-
-  componentDidMount() {
-    this._adjustHeader()
+  getColor(status) {
+    switch (status) {
+      case 'Confirmed':
+        return 'badge-success'
+      case 'Unconfirmed':
+        return 'badge-warning'
+      case 'No-Show':
+        return 'badge-secondary'
+      default:
+        return 'badge-info'
+    }
   }
-
-  componentDidUpdate() {
-    this._adjustHeader()
-  }
-
   render() {
     let { length, date, events, startAccessor } = this.props
     let messages = message(this.props.messages)
@@ -60,46 +58,39 @@ class Agenda extends React.Component {
     events = events.filter(event => inRange(event, date, end, this.props))
 
     events.sort((a, b) => +get(a, startAccessor) - +get(b, startAccessor))
-
     return (
       <div className="rbc-agenda-view">
         <table ref="header" className="rbc-agenda-table">
           <thead>
             <tr>
-              <th className="rbc-header" ref="dateCol">
+              <th className="rbc-header" style={{ width: '15%' }}>
                 {messages.date}
               </th>
-              <th className="rbc-header" ref="timeCol">
+              <th className="rbc-header" style={{ width: '15%' }}>
                 {messages.time}
               </th>
-              <th className="rbc-header">{messages.event}</th>
+              <th className="rbc-header" style={{ width: '30%' }}>
+                Customer
+              </th>
+              <th className="rbc-header" style={{ width: '30%' }}>
+                Location
+              </th>
+              <th className="rbc-header" style={{ width: '10%' }}>
+                Status
+              </th>
             </tr>
           </thead>
+          <tbody ref="tbody">
+            {range.map((day, idx) => this.renderDay(day, events, idx))}
+          </tbody>
         </table>
-        <div className="rbc-agenda-content" ref="content">
-          <table className="rbc-agenda-table">
-            <tbody ref="tbody">
-              {range.map((day, idx) => this.renderDay(day, events, idx))}
-            </tbody>
-          </table>
-        </div>
       </div>
     )
   }
 
   renderDay = (day, events, dayKey) => {
-    let {
-      culture,
-      components,
-      titleAccessor,
-      agendaDateFormat,
-      eventPropGetter,
-      startAccessor,
-      endAccessor,
-      selected,
-    } = this.props
+    let { culture, components, agendaDateFormat } = this.props
 
-    let EventComponent = components.event
     let DateComponent = components.date
 
     events = events.filter(e =>
@@ -107,19 +98,11 @@ class Agenda extends React.Component {
     )
 
     return events.map((event, idx) => {
-      const { className, style } = eventPropGetter
-        ? eventPropGetter(
-            event,
-            get(event, startAccessor),
-            get(event, endAccessor),
-            isSelected(event, selected)
-          )
-        : {}
       let dateLabel =
         idx === 0 && localizer.format(day, agendaDateFormat, culture)
       let first =
         idx === 0 ? (
-          <td rowSpan={events.length} className="rbc-agenda-date-cell">
+          <td rowSpan={events.length}>
             {DateComponent ? (
               <DateComponent day={day} label={dateLabel} />
             ) : (
@@ -129,21 +112,26 @@ class Agenda extends React.Component {
         ) : (
           false
         )
-
-      let title = get(event, titleAccessor)
-
       return (
-        <tr key={dayKey + '_' + idx} className={className} style={style}>
+        <tr key={dayKey + '_' + idx}>
           {first}
-          <td className="rbc-agenda-time-cell">
-            {this.timeRangeLabel(day, event)}
+          <td>{this.timeRangeLabel(day, event)}</td>
+          <td>
+            {event.customer
+              ? event.customer.first_name + ' ' + event.customer.last_name
+              : 'Customer Name'}
           </td>
-          <td className="rbc-agenda-event-cell">
-            {EventComponent ? (
-              <EventComponent event={event} title={title} />
-            ) : (
-              title
-            )}
+          <td>{event.address ? event.address : 'Address'}</td>
+          <td>
+            <div className="text-center">
+              {event.status ? (
+                <span className={'badge ' + this.getColor(event.status)}>
+                  {event.status}
+                </span>
+              ) : (
+                <span className="badge badge-secondary">Status</span>
+              )}
+            </div>
           </td>
         </tr>
       )
@@ -193,34 +181,6 @@ class Agenda extends React.Component {
         )}
       </span>
     )
-  }
-
-  _adjustHeader = () => {
-    let header = this.refs.header
-    let firstRow = this.refs.tbody.firstChild
-
-    if (!firstRow) return
-
-    let isOverflowing =
-      this.refs.content.scrollHeight > this.refs.content.clientHeight
-    let widths = this._widths || []
-
-    this._widths = [
-      getWidth(firstRow.children[0]),
-      getWidth(firstRow.children[1]),
-    ]
-
-    if (widths[0] !== this._widths[0] || widths[1] !== this._widths[1]) {
-      this.refs.dateCol.style.width = this._widths[0] + 'px'
-      this.refs.timeCol.style.width = this._widths[1] + 'px'
-    }
-
-    if (isOverflowing) {
-      classes.addClass(header, 'rbc-header-overflowing')
-      header.style.marginRight = scrollbarSize() + 'px'
-    } else {
-      classes.removeClass(header, 'rbc-header-overflowing')
-    }
   }
 }
 

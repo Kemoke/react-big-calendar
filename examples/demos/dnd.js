@@ -9,6 +9,10 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.less'
 
 const DragAndDropCalendar = withDragAndDrop(BigCalendar)
 
+export const Event = props => {
+  return <div>asd</div>
+}
+
 class Dnd extends React.Component {
   constructor(props) {
     super(props)
@@ -57,6 +61,11 @@ class Dnd extends React.Component {
         events={this.state.events}
         onEventDrop={this.moveEvent}
         resizable
+        components={{
+          agenda: {
+            event: Event,
+          },
+        }}
         onEventResize={this.resizeEvent}
         defaultView="week"
         defaultDate={new Date(2015, 3, 12)}
