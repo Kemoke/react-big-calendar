@@ -36,8 +36,9 @@ class Agenda extends React.Component {
   static defaultProps = {
     length: 30,
   }
-  getColor(status) {
-    switch (status) {
+  getColor(event) {
+    if (event.blocktime) return 'badge-info'
+    switch (event) {
       case 'Confirmed':
         return 'badge-success'
       case 'Unconfirmed':
@@ -69,10 +70,13 @@ class Agenda extends React.Component {
               <th className="rbc-header" style={{ width: '15%' }}>
                 {messages.time}
               </th>
-              <th className="rbc-header" style={{ width: '30%' }}>
+              <th className="rbc-header" style={{ width: '20%' }}>
                 Customer
               </th>
-              <th className="rbc-header" style={{ width: '30%' }}>
+              <th className="rbc-header" style={{ width: '20%' }}>
+                Phone Number
+              </th>
+              <th className="rbc-header" style={{ width: '20%' }}>
                 Location
               </th>
               <th className="rbc-header" style={{ width: '10%' }}>
@@ -119,14 +123,19 @@ class Agenda extends React.Component {
           <td>
             {event.customer
               ? event.customer.first_name + ' ' + event.customer.last_name
-              : 'Customer Name'}
+              : ''}
           </td>
-          <td>{event.address ? event.address : 'Address'}</td>
+          <td>{event.address ? event.address : ''}</td>
+          <td>{event.customer ? '+1' + event.customer.phone_number : ''}</td>
           <td>
             <div className="text-center">
               {event.status ? (
-                <span className={'badge ' + this.getColor(event.status)}>
-                  {event.status}
+                <span className={'badge ' + this.getColor(event)}>
+                  {event.status
+                    ? event.status
+                    : event.blockoff
+                      ? 'Block Time'
+                      : 'Off Time'}
                 </span>
               ) : (
                 <span className="badge badge-secondary">Status</span>
