@@ -37,16 +37,19 @@ class Agenda extends React.Component {
     length: 30,
   }
   getColor(event) {
-    if (event.blocktime) return 'badge-info'
-    switch (event) {
-      case 'Confirmed':
-        return 'badge-success'
-      case 'Unconfirmed':
-        return 'badge-warning'
-      case 'No-Show':
-        return 'badge-secondary'
-      default:
-        return 'badge-info'
+    if (event.blockoff) return 'badge-info'
+    else if (event.offtime) return 'badge-dark'
+    else {
+      switch (event) {
+        case 'Confirmed':
+          return 'badge-success'
+        case 'Unconfirmed':
+          return 'badge-warning'
+        case 'No-Show':
+          return 'badge-secondary'
+        default:
+          return 'badge-info'
+      }
     }
   }
   render() {
@@ -125,20 +128,18 @@ class Agenda extends React.Component {
               ? event.customer.first_name + ' ' + event.customer.last_name
               : ''}
           </td>
-          <td>{event.address ? event.address : ''}</td>
           <td>{event.customer ? '+1' + event.customer.phone_number : ''}</td>
+          <td>{event.address ? event.address : ''}</td>
           <td>
             <div className="text-center">
               {event.status ? (
                 <span className={'badge ' + this.getColor(event)}>
-                  {event.status
-                    ? event.status
-                    : event.blockoff
-                      ? 'Block Time'
-                      : 'Off Time'}
+                  {event.status}
                 </span>
               ) : (
-                <span className="badge badge-secondary">Status</span>
+                <span className="badge badge-secondary">
+                  {event.blockoff ? 'Block Time' : 'Off Time'}
+                </span>
               )}
             </div>
           </td>
