@@ -37,7 +37,7 @@ class Agenda extends React.Component {
     length: 30,
   }
   getColor(event) {
-    if (event.blockoff) return 'badge-info'
+    if (event.blockoff === true) return 'badge-info'
     else if (event.offtime) return 'badge-dark'
     else {
       switch (event) {
