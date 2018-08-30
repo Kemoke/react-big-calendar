@@ -40,7 +40,7 @@ class Agenda extends React.Component {
     if (event.blockoff === true) return 'badge-info'
     else if (event.offtime) return 'badge-dark'
     else {
-      switch (event) {
+      switch (event.status) {
         case 'Confirmed':
           return 'badge-success'
         case 'Unconfirmed':
